@@ -82,7 +82,7 @@ export default {
 
             this.loading = true;
             try {
-                this.loadingStore.show('Logging in...');
+                this.loadingStore.show('');
                 const authStore = useAuthStore();
                 await authStore.login({ barista_email: this.barista_email, barista_password: this.barista_password });
                 window.location.href = '/barista';
