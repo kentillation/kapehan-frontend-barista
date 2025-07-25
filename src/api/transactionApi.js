@@ -116,8 +116,8 @@ export const TRANSACTION_API = {
         }
     },
 
-    async updateBaristaProductStatusApi(transactionId, orderStatus) {
-        if (!transactionId || !orderStatus) {
+    async updateBaristaProductStatusApi(productId, transactionId, orderStatus) {
+        if (!productId || !transactionId || !orderStatus) {
             throw new Error('Invalid transactionId or orderStatus');
         }
         try {
@@ -133,7 +133,7 @@ export const TRANSACTION_API = {
             };
             const response = await apiClient.put(
                 `${this.ENDPOINTS.UPDATE_BARISTA_PRODUCT_ORDER_STATUS}`,
-                { transactionId, orderStatus },
+                { productId, transactionId, orderStatus },
                 config
             );
             return response.data;

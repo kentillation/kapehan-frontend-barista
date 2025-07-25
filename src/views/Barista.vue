@@ -155,7 +155,7 @@ export default {
                                 transaction_id: response.data.transaction_id,
                                 table_number: response.data.table_number,
                                 reference_number: order.reference_number,
-                                order_items: (response.data.all_orders || []).map(item => ({
+                                order_items: Object.values(response.data.all_orders || {}).map(item => ({
                                     ...item,
                                     station_status_id: Number(item.station_status_id),
                                     showDialog: false
@@ -220,7 +220,7 @@ export default {
 
         async changeStatus(order) {
             this.changeStatusDialog = false;
-            if (!order || !order.transaction_id) {
+            if (!order || !order.product_id || !order.transaction_id || !order.station_status_id) {
                 this.showError("Invalid order data!");
                 return;
             }
@@ -235,7 +235,7 @@ export default {
             const newStatus = this.station_statuses[nextStatusIndex].station_status_id;
             this.loadingStore.show("Updating status...");
             try {
-                await this.transactStore.updateBaristaProductStatusStore(order.transaction_id, newStatus);
+                await this.transactStore.updateBaristaProductStatusStore(order.product_id, order.transaction_id, newStatus);
                 const statusName = this.getStatusName(newStatus);
                 this.showSuccess(`${order.product_name}${order.temp_label}${order.size_label} is ${statusName}`);
                 order.station_status_id = newStatus;
