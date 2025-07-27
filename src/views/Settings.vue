@@ -60,8 +60,8 @@
                 <v-card-text>
                     <div class="d-flex flex-column">
                         <v-radio-group v-model="selectedTheme" class="ms-5">
-                            <v-radio label="Dark" value="dark"></v-radio>
-                            <v-radio label="Light" value="light"></v-radio>
+                            <v-radio label="Dark" value="dark" color="#0090b6"></v-radio>
+                            <v-radio label="Light" value="light" color="#0090b6"></v-radio>
                         </v-radio-group>
                     </div>
                 </v-card-text>
