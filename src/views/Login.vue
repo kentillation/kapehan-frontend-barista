@@ -3,7 +3,7 @@
         <v-container class="fill-height d-flex align-center justify-center">
             <v-sheet class="pa-6 mx-auto ma-4" max-width="500" rounded="lg" width="100%">
                 <div class="d-flex justify-center mb-4">
-                    <img :src="logo" alt="Poofsa Logo" />
+                    <img :src="logo" loading="lazy" alt="Poofsa Logo" />
                 </div>
                 <h1 class="text-center">Poofsa <span class="text-grey">.brist</span></h1>
                 <v-form ref="form" @submit.prevent="handleLogin" v-model="isFormValid" class="pa-4">
@@ -31,7 +31,7 @@
                         Proceed
                     </v-btn>
                 </v-form>
-                <h6 class="text-center text-grey mt-5">Poofsa .brist UAT Version v1.0.0</h6>
+                <h6 class="text-center text-grey mt-5">Poofsa .brist BETA Version v1.0.0</h6>
             </v-sheet>
             <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="4000" top>
                 {{ snackbar.message }}
