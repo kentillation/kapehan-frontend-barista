@@ -42,7 +42,35 @@
                             </v-chip>
 
                             <!-- Dialog for this specific item -->
-                            <v-dialog v-model="item.showDialog" width="400" transition="dialog-bottom-transition">
+                             <v-dialog v-model="item.showDialog" width="400" transition="dialog-bottom-transition">
+                                <v-btn @click="item.showDialog = false" class="position-absolute" size="small"
+                                    style="top: -50px;" icon>
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                                <v-card class="pa-3">
+                                    <h3>Confirmation</h3>
+                                    <v-card-text class="d-flex flex-column">
+                                        <span style="font-size: 16px;">
+                                            <strong>Table #: {{ order.table_number }}</strong>
+                                        </span>
+                                        <span class="mb-3" style="font-size: 16px;">
+                                            <strong>{{ item.product_name }}{{ item.temp_label }}{{ item.size_label }} &nbsp; x{{ item.quantity }}</strong>
+                                        </span>
+                                        <span class="text-center">Are you done with this order?</span>
+                                    </v-card-text>
+                                    <v-card-actions class="d-flex">
+                                        <v-btn color="red" variant="tonal" class="px-3 pt-1 pb-6" prepend-icon="mdi-close"
+                                            @click="item.showDialog = false">Let me check again!
+                                        </v-btn>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="green" variant="tonal" class="px-3 pt-1 pb-6" prepend-icon="mdi-check"
+                                            @click="changeStatus(item); item.showDialog = false">Yes
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+
+                            <!-- <v-dialog v-model="item.showDialog" width="400" transition="dialog-bottom-transition">
                                 <v-btn @click="item.showDialog = false" class="position-absolute" size="small"
                                     style="top: -50px;" icon>
                                     <v-icon>mdi-close</v-icon>
@@ -69,7 +97,7 @@
                                         </v-btn>
                                     </v-card-actions>
                                 </v-card>
-                            </v-dialog>
+                            </v-dialog> -->
                         </div>
                     </v-card-text>
                     <v-card-actions>
