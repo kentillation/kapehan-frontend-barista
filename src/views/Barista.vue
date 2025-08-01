@@ -43,17 +43,17 @@
 
                             <!-- Dialog for this specific item -->
                              <v-dialog v-model="item.showDialog" width="400" transition="dialog-bottom-transition">
-                                <v-btn @click="item.showDialog = false" class="position-absolute" size="small"
-                                    style="top: -50px;" icon>
+                                <v-btn @click="item.showDialog = false" color="#0090b6" class="position-absolute" size="small"
+                                    style="top: -20px; right: -17px; z-index: 10;" icon>
                                     <v-icon>mdi-close</v-icon>
                                 </v-btn>
                                 <v-card class="pa-3">
                                     <h3>Confirmation</h3>
                                     <div class="ms-2 my-3 d-flex flex-column">
-                                        <span style="font-size: 18px;">
+                                        <span style="font-size: 16px;">
                                             <strong>Table #: {{ order.table_number }}</strong>
                                         </span>
-                                        <span class="mt-1" style="font-size: 18px;">
+                                        <span class="mt-1" style="font-size: 16px;">
                                             <strong>{{ item.product_name }}{{ item.temp_label }}{{ item.size_label }} &nbsp; &nbsp; &nbsp; x{{ item.quantity }}</strong>
                                         </span>
                                     </div>
