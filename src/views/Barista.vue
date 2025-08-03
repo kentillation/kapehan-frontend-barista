@@ -119,6 +119,7 @@ import { useBranchStore } from '@/stores/branchStore';
 import { useTransactStore } from '@/stores/transactionStore';
 import { useStocksStore } from '@/stores/stocksStore';
 import { useLoadingStore } from '@/stores/loading';
+import echo from '@/resources/js/echo';
 import Snackbar from '@/components/Snackbar.vue';
 import Alert from '@/components/Alert.vue';
 
@@ -137,10 +138,12 @@ export default {
             station_statuses: [],
             loadingCurrentOrders: false,
             changeStatusDialog: false,
+            echoChannel: null,
         }
     },
     mounted() {
         this.fetchCurrentOrders();
+        this.setupRealTimeUpdates();
     },
     setup() {
         const authStore = useAuthStore();
@@ -165,8 +168,96 @@ export default {
                 order_items: order.order_items || []
             }));
         },
+        channelName() {
+            // Create a channel name based on shop and branch
+            return `shop.${this.authStore.shopId}.branch.${this.authStore.branchId}`;
+        }
     },
     methods: {
+
+        setupRealTimeUpdates() {
+            // Clean up any existing channel first
+            this.cleanupRealTimeUpdates();
+            
+            this.echoChannel = echo.private(`shop.${this.authStore.shopId}.branch.${this.authStore.branchId}`)
+            .listen('.order.submitted', (data) => {
+                this.handleNewOrder(data.orderData);
+            })
+            .listen('.status.updated', (data) => {
+                this.handleStatusUpdate(data);
+            });
+        },
+        
+        cleanupRealTimeUpdates() {
+            if (this.echoChannel) {
+                echo.leave(this.channelName);
+                this.echoChannel = null;
+            }
+        },
+        
+        async handleNewOrder(orderData) {
+            try {
+                // Show notification
+                this.showSuccess(`New order for Table #${orderData.table_number}`);
+                
+                // Play notification sound
+                // this.playNotificationSound();
+                
+                // Fetch order details
+                const response = await this.transactStore.fetchBaristaProductDetailsStore(orderData.transaction_id);
+                
+                if (response?.data) {
+                    const newOrder = {
+                        transaction_id: response.data.transaction_id,
+                        table_number: response.data.table_number,
+                        reference_number: orderData.reference_number,
+                        order_items: Object.values(response.data.all_orders || {}).map(item => ({
+                            ...item,
+                            station_status_id: Number(item.station_status_id),
+                            showDialog: false
+                        })),
+                        customer_name: response.data.customer_name,
+                        total_amount: response.data.total_amount,
+                        order_status_id: response.data.order_status_id
+                    };
+                    
+                    // Add to beginning of orders array
+                    this.orders.unshift(newOrder);
+                    
+                    // Highlight the new order card
+                    this.activeCards[orderData.reference_number] = true;
+                    setTimeout(() => {
+                        this.activeCards[orderData.reference_number] = false;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error handling new order:', error);
+            }
+        },
+        
+        handleStatusUpdate(updateData) {
+            // Find and update the order in our local state
+            this.orders = this.orders.map(order => {
+                if (order.transaction_id === updateData.transaction_id) {
+                    return {
+                        ...order,
+                        order_items: order.order_items.map(item => {
+                            if (item.product_id === updateData.product_id) {
+                                return { ...item, station_status_id: updateData.new_status };
+                            }
+                            return item;
+                        })
+                    };
+                }
+                return order;
+            });
+        },
+        
+        // playNotificationSound() {
+        //     const audio = new Audio('/notification.mp3'); // Add this file to your public folder
+        //     audio.play().catch(e => console.log('Audio play failed:', e));
+        // },
+
         async fetchCurrentOrders() {
             this.loadingStore.show("");
             this.loadingCurrentOrders = true;
