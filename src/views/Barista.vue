@@ -138,12 +138,11 @@ export default {
             station_statuses: [],
             loadingCurrentOrders: false,
             changeStatusDialog: false,
-            echoChannel: null,
         }
     },
     mounted() {
         this.fetchCurrentOrders();
-        this.setupRealTimeUpdates();
+        this.realTimeUpdates();
     },
     setup() {
         const authStore = useAuthStore();
@@ -168,31 +167,16 @@ export default {
                 order_items: order.order_items || []
             }));
         },
-        channelName() {
-            // Create a channel name based on shop and branch
-            return `shop.${this.authStore.shopId}.branch.${this.authStore.branchId}`;
-        }
     },
     methods: {
 
-        setupRealTimeUpdates() {
-            // Clean up any existing channel first
-            this.cleanupRealTimeUpdates();
-            
-            this.echoChannel = echo.private(`shop.${this.authStore.shopId}.branch.${this.authStore.branchId}`)
-            .listen('.order.submitted', (data) => {
-                this.handleNewOrder(data.orderData);
-            })
-            .listen('.status.updated', (data) => {
-                this.handleStatusUpdate(data);
-            });
-        },
-        
-        cleanupRealTimeUpdates() {
-            if (this.echoChannel) {
-                echo.leave(this.channelName);
-                this.echoChannel = null;
-            }
+        realTimeUpdates() {
+            setTimeout(() => {
+                echo.channel('testChannel')
+                .listen('NewOrderSubmitted', (e) => {
+                    console.log(e);
+                })
+            }, 200);
         },
         
         async handleNewOrder(orderData) {
