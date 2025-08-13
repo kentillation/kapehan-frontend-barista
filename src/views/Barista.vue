@@ -376,7 +376,7 @@ export default {
         },
 
         showAlert(message) {
-            this.$refs.alertRef.showSnackbarAlert(message, "error");
+            this.$refs.alertRef.showSnackbarAlert(message, "success");
         },
 
         showSuccess(message) {
