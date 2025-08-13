@@ -15,11 +15,8 @@
           <span><strong>{{ authStore.shopName }}</strong></span>
           <v-spacer></v-spacer>
           <v-btn icon>
-            <v-badge v-if="stockNotificationQty >= 1" 
-              :content="stockNotificationQty" 
-              class="position-absolute" 
-              style="top: 2px; right: 9px;" 
-              color="error">
+            <v-badge v-if="stockNotificationQty >= 1" :content="stockNotificationQty" class="position-absolute"
+              style="top: 2px; right: 9px;" color="error">
             </v-badge>
             <v-icon>mdi-bell-outline</v-icon>
           </v-btn>
@@ -34,8 +31,8 @@
               style="border-radius: 30px;">Barista</v-list-item>
             <v-list-item prepend-icon="mdi-cog-outline" @click="toSettings" class="ps-3"
               style="border-radius: 30px;">Settings</v-list-item>
-            <v-list-item prepend-icon="mdi-door-open" @click="showLogout" class="ps-3"
-              style="border-radius: 30px;">Sign Out</v-list-item>
+            <v-list-item prepend-icon="mdi-door-open" @click="showLogout" class="ps-3" style="border-radius: 30px;">Sign
+              Out</v-list-item>
           </v-list>
         </v-navigation-drawer>
       </template>
@@ -55,23 +52,28 @@ import { useLoadingStore } from '@/stores/loading';
 import { useStocksStore } from '@/stores/stocksStore';
 import GlobalLoader from '@/components/GlobalLoader.vue';
 import { useRoute } from 'vue-router';
+import echo from '@/resources/js/echo';
 
 export default {
   name: 'App',
-  data () {
+  data() {
     return {
       stocks: [],
     }
   },
+
   components: {
     GlobalLoader,
   },
+
   async mounted() {
     await this.fetchLowStocks();
+    this.realTimeUpdates();
   },
+
   setup() {
     const authStore = useAuthStore();
-    const stocksStore = useStocksStore(); 
+    const stocksStore = useStocksStore();
     const loadingStore = useLoadingStore();
     const connectionStatus = ref('online');
     const route = useRoute();
@@ -140,7 +142,7 @@ export default {
 
     return {
       authStore,
-      stocksStore, 
+      stocksStore,
       loadingStore,
       drawer: ref(true),
       open: ref(false),
@@ -150,6 +152,7 @@ export default {
       isNotFoundPage,
     };
   },
+
   computed: {
     ...mapState(useStocksStore, ['stockNotificationQty']),
     showSidebar() {
@@ -159,26 +162,42 @@ export default {
       return this.$route.name !== 'LoginPage' && !this.isNotFoundPage;
     },
   },
+
   methods: {
     // hideNotFoundPage() {
     //   return this.$route.name !== 'NotFound';
     // },
+
+    realTimeUpdates() {
+      setTimeout(() => {
+        echo.channel('testChannel')
+          .listen('NewOrderSubmitted', (e) => {
+            console.log(e);
+          })
+      }, 200);
+    },
+
     toSettings() {
       this.$router.push('/settings');
     },
+
     toBarista() {
       this.$router.push('/barista');
     },
+
     async showLogout() {
       this.drawer = false;
       await this.authStore.logout();
     },
+
     toHelp() {
       this.$router.push('/help');
     },
+
     toAbout() {
       this.$router.push('/about');
     },
+
     async fetchLowStocks() {
       try {
         if (!this.authStore.branchId) {
@@ -191,6 +210,7 @@ export default {
         console.error('Error fetching stocks:', error);
       }
     },
+    
   }
 };
 </script>
