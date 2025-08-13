@@ -52,7 +52,6 @@ import { useLoadingStore } from '@/stores/loading';
 import { useStocksStore } from '@/stores/stocksStore';
 import GlobalLoader from '@/components/GlobalLoader.vue';
 import { useRoute } from 'vue-router';
-import echo from '@/resources/js/echo';
 
 export default {
   name: 'App',
@@ -68,7 +67,6 @@ export default {
 
   async mounted() {
     await this.fetchLowStocks();
-    this.realTimeUpdates();
   },
 
   setup() {
@@ -167,15 +165,6 @@ export default {
     // hideNotFoundPage() {
     //   return this.$route.name !== 'NotFound';
     // },
-
-    realTimeUpdates() {
-      setTimeout(() => {
-        echo.channel('testChannel')
-          .listen('NewOrderSubmitted', (e) => {
-            console.log(e);
-          })
-      }, 200);
-    },
 
     toSettings() {
       this.$router.push('/settings');
