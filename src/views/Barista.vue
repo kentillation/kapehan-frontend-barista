@@ -182,7 +182,7 @@ export default {
         realTimeUpdates() {
             echo.channel('testChannel')
                 .listen('NewOrderSubmitted', (e) => {
-                this.showAlert(e);
+                this.showSuccess(e);
                 console.log(e);
             });
         },
@@ -376,7 +376,7 @@ export default {
         },
 
         showAlert(message) {
-            this.$refs.alertRef.showSnackbarAlert(message, "success");
+            this.$refs.alertRef.showSnackbarAlert(message, "error");
         },
 
         showSuccess(message) {
