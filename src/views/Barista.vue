@@ -130,6 +130,7 @@ export default {
         Snackbar,
         Alert,
     },
+
     data() {
         return {
             iconSize: "70px",
@@ -140,10 +141,16 @@ export default {
             changeStatusDialog: false,
         }
     },
+
     mounted() {
         this.fetchCurrentOrders();
         this.realTimeUpdates();
     },
+
+    beforeUnmount() {
+        echo.leave('testChannel');
+    },
+
     setup() {
         const authStore = useAuthStore();
         const branchStore = useBranchStore();
@@ -159,6 +166,7 @@ export default {
         };
         return { authStore, branchStore, transactStore, stocksStore, loadingStore, activeCards, handleCardClick };
     },
+
     computed: {
         ...mapState(useStocksStore, ['stockNotificationQty']),
         currentOrders() {
@@ -168,15 +176,14 @@ export default {
             }));
         },
     },
+
     methods: {
 
         realTimeUpdates() {
-            setTimeout(() => {
-                echo.channel('testChannel')
+            echo.channel('testChannel')
                 .listen('NewOrderSubmitted', (e) => {
-                    console.log(e);
-                })
-            }, 200);
+                console.log(e);
+            });
         },
         
         async handleNewOrder(orderData) {
@@ -385,6 +392,7 @@ export default {
             }
         }
     },
+
 };
 </script>
 
