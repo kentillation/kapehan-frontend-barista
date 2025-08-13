@@ -144,7 +144,6 @@ export default {
 
     mounted() {
         this.fetchCurrentOrders();
-        this.realTimeUpdates();
     },
 
     beforeUnmount() {
@@ -180,11 +179,13 @@ export default {
     methods: {
 
         realTimeUpdates() {
-            echo.channel('testChannel')
-                .listen('NewOrderSubmitted', (e) => {
-                this.showAlert(e.message);
-                console.log(e);
-            });
+            setTimeout(() => {
+                echo.channel('testChannel')
+                    .listen('NewOrderSubmitted', (e) => {
+                        this.showNewOrderAlert(e.message);
+                        console.log(e);
+                    });
+            }, 1000);
         },
         
         async handleNewOrder(orderData) {
@@ -256,6 +257,7 @@ export default {
             try {
                 this.fetchLowStocks();
                 this.fetchStationStatus();
+                this.realTimeUpdates();
                 await this.transactStore.fetchAllCurrentOrdersStore();
                 const orders = [];
                 await Promise.all(this.transactStore.currentOrders.map(async (order) => {
@@ -377,6 +379,10 @@ export default {
 
         showAlert(message) {
             this.$refs.alertRef.showSnackbarAlert(message, "error");
+        },
+
+        showNewOrderAlert(message) {
+            this.$refs.alertRef.showSnackbarAlert(message, "success");
         },
 
         showSuccess(message) {
