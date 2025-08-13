@@ -75,7 +75,7 @@ export default {
   },
 
   async mounted() {
-    // await this.fetchLowStocks();
+    await this.fetchLowStocks();
     this.lowStockAlert();
   },
 
@@ -209,18 +209,18 @@ export default {
       this.$refs.alertRef.showSnackbarAlert(message, "error");
     },
 
-    // async fetchLowStocks() {
-    //   try {
-    //     if (!this.authStore.branchId) {
-    //       console.error('Error fetching low stocks!');
-    //       this.stocks = [];
-    //       return;
-    //     }
-    //     await this.stocksStore.fetchLowStocksStore(this.authStore.branchId);
-    //   } catch (error) {
-    //     console.error('Error fetching stocks:', error);
-    //   }
-    // },
+    async fetchLowStocks() {
+      try {
+        if (!this.authStore.branchId) {
+          console.error('Error fetching low stocks!');
+          this.stocks = [];
+          return;
+        }
+        await this.stocksStore.fetchLowStocksStore(this.authStore.branchId);
+      } catch (error) {
+        console.error('Error fetching stocks:', error);
+      }
+    },
 
   }
 };
