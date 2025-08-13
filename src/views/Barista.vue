@@ -255,7 +255,7 @@ export default {
             this.loadingStore.show("");
             this.loadingCurrentOrders = true;
             try {
-                this.fetchLowStocks();
+                // this.fetchLowStocks();
                 this.fetchStationStatus();
                 this.realTimeUpdates();
                 await this.transactStore.fetchAllCurrentOrdersStore();
@@ -352,7 +352,7 @@ export default {
                 const statusName = this.getStatusName(newStatus);
                 this.showSuccess(`${order.product_name}${order.temp_label}${order.size_label} is ${statusName}`);
                 order.station_status_id = newStatus;
-                this.fetchLowStocks();
+                // this.fetchLowStocks();
                 this.loadingStore.hide();
             } catch (error) {
                 console.error('Error updating status:', error);
@@ -362,16 +362,16 @@ export default {
             }
         },
 
-        async fetchLowStocks() {
-            try {
-                await this.stocksStore.fetchLowStocksStore(this.authStore.branchId);
-                if (this.stockNotificationQty > 0) {
-                    this.showAlert(`${this.stockNotificationQty} ${this.stockNotificationQty > 1 ? 'stocks' : 'stock'} has low quantity.`);
-                }
-            } catch (error) {
-                console.error('Error fetching stocks:', error);
-            }
-        },
+        // async fetchLowStocks() {
+        //     try {
+        //         await this.stocksStore.fetchLowStocksStore(this.authStore.branchId);
+        //         if (this.stockNotificationQty > 0) {
+        //             this.showAlert(`${this.stockNotificationQty} ${this.stockNotificationQty > 1 ? 'stocks' : 'stock'} has low quantity.`);
+        //         }
+        //     } catch (error) {
+        //         console.error('Error fetching stocks:', error);
+        //     }
+        // },
 
         showError(message) {
             this.$refs.snackbarRef.showSnackbar(message, "error");

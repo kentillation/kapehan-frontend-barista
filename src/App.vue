@@ -14,12 +14,17 @@
           <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
           <span><strong>{{ authStore.shopName }}</strong></span>
           <v-spacer></v-spacer>
+
           <v-btn icon>
             <v-badge v-if="stockNotificationQty >= 1" :content="stockNotificationQty" class="position-absolute"
-              style="top: 2px; right: 9px;" color="error">
-            </v-badge>
-            <v-icon>mdi-bell-outline</v-icon>
+              style="top: 2px; right: 9px;" color="error" />
+            <v-icon>mdi-dropbox</v-icon>
+            <v-tooltip v-if="stockNotificationQty >= 1" activator="parent" location="bottom">
+              <span class="text-white pa-3">{{ stockNotificationQty }} {{ stockNotificationQty === 1 ? 'stock' :
+                'stocks' }} has low quantity.</span>
+            </v-tooltip>
           </v-btn>
+
           <v-btn class="ms-0" icon>
             <v-icon @click="toSettings">mdi-account-circle-outline</v-icon>
           </v-btn>
@@ -40,6 +45,7 @@
         <router-view />
         <GlobalLoader />
       </v-layout>
+      <Alert ref="alertRef" />
     </v-main>
   </v-app>
 </template>
@@ -50,8 +56,10 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
 import { useStocksStore } from '@/stores/stocksStore';
-import GlobalLoader from '@/components/GlobalLoader.vue';
 import { useRoute } from 'vue-router';
+import GlobalLoader from '@/components/GlobalLoader.vue';
+import echo from '@/resources/js/echo';
+import Alert from '@/components/Alert.vue';
 
 export default {
   name: 'App',
@@ -63,10 +71,12 @@ export default {
 
   components: {
     GlobalLoader,
+    Alert,
   },
 
   async mounted() {
-    await this.fetchLowStocks();
+    // await this.fetchLowStocks();
+    this.lowStockAlert();
   },
 
   setup() {
@@ -166,6 +176,14 @@ export default {
     //   return this.$route.name !== 'NotFound';
     // },
 
+    // real-time
+    async lowStockAlert() {
+      echo.channel('lowStockLevelChannel')
+        .listen('LowStockLevel', (e) => {
+          this.showAlert(e.message);
+        });
+    },
+
     toSettings() {
       this.$router.push('/settings');
     },
@@ -187,19 +205,23 @@ export default {
       this.$router.push('/about');
     },
 
-    async fetchLowStocks() {
-      try {
-        if (!this.authStore.branchId) {
-          console.error('Error fetching low stocks!');
-          this.stocks = [];
-          return;
-        }
-        await this.stocksStore.fetchLowStocksStore(this.authStore.branchId);
-      } catch (error) {
-        console.error('Error fetching stocks:', error);
-      }
+    showAlert(message) {
+      this.$refs.alertRef.showSnackbarAlert(message, "error");
     },
-    
+
+    // async fetchLowStocks() {
+    //   try {
+    //     if (!this.authStore.branchId) {
+    //       console.error('Error fetching low stocks!');
+    //       this.stocks = [];
+    //       return;
+    //     }
+    //     await this.stocksStore.fetchLowStocksStore(this.authStore.branchId);
+    //   } catch (error) {
+    //     console.error('Error fetching stocks:', error);
+    //   }
+    // },
+
   }
 };
 </script>
