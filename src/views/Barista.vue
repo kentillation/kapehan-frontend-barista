@@ -182,6 +182,7 @@ export default {
         realTimeUpdates() {
             echo.channel('testChannel')
                 .listen('NewOrderSubmitted', (e) => {
+                this.showSuccess("Poooof! A notification from Cashier.");
                 console.log(e);
             });
         },
