@@ -147,7 +147,7 @@ export default {
     },
 
     beforeUnmount() {
-        echo.leave('testChannel');
+        echo.leave('newOrderChannel');
     },
 
     setup() {
@@ -180,7 +180,7 @@ export default {
 
         realTimeUpdates() {
             setTimeout(() => {
-                echo.channel('testChannel')
+                echo.channel('newOrderChannel')
                     .listen('NewOrderSubmitted', (e) => {
                         this.showNewOrderAlert(e.message);
                         console.log(e);
