@@ -180,10 +180,12 @@ export default {
 
         realTimeUpdates() {
             setTimeout(() => {
-                echo.channel('newOrderChannel')
+                echo.channel('station.1')
                     .listen('NewOrderSubmitted', (e) => {
-                        this.showNewOrderAlert(e.message);
                         console.log(e);
+                        if (e.stationId === 1) {
+                            this.showNewOrderAlert(e.message);
+                        }
                     });
             }, 1000);
         },
@@ -259,7 +261,6 @@ export default {
                 this.fetchStationStatus();
                 await this.transactStore.fetchAllCurrentOrdersStore();
                 const orders = [];
-                let hasNewKitchenOrders = false;
 
                 await Promise.all(this.transactStore.currentOrders.map(async (order) => {
                     try {
@@ -274,10 +275,7 @@ export default {
                                 showDialog: false
                             }));
 
-                            // Check if this order has kitchen items (station_id = 1)
-                            if (orderItems.some(item => Number(item.station_id) === 1)) {
-                                hasNewKitchenOrders = true;
-                            }
+                            const isBaristaOrder = orderItems.some(item => Number(item.station_id) === 1)
 
                             orders.push({
                                 transaction_id: response.data.transaction_id,
@@ -288,6 +286,11 @@ export default {
                                 total_amount: response.data.total_amount,
                                 order_status_id: response.data.order_status_id
                             });
+
+                            if (isBaristaOrder) {
+                                this.realTimeUpdates();
+                            }
+
                         }
                     } catch (error) {
                         console.error(`Error fetching details for order ${order.transaction_id}:`, error);
@@ -302,10 +305,6 @@ export default {
                 }));
 
                 this.orders = orders;
-
-                if (hasNewKitchenOrders) {
-                    this.realTimeUpdates();
-                }
             } catch (error) {
                 console.error('Error fetching current orders:', error);
                 this.showError("Error fetching current orders!");
